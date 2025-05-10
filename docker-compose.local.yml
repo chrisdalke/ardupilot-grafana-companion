@@ -1,52 +1,76 @@
 services:
+  # ardupilot-sitl
+  # Runs an ArduPilot SITL simulation to provide test data
+  ardupilot-sitl:
+    build: ./services/ardupilot
+    network_mode: host
+
+  # mavp2p
+  # Mavlink proxy, allowing multiple mavlink clients.
+  mavp2p:
+    image: bluenviron/mavp2p
+    command: tcpc:127.0.0.1:5760 --print
+    network_mode: host
+
+  # telegraf
+  # Modular data collection agent, configured to ingest mavlink data.
   telegraf:
+    build: ./services/telegraf
 
-  vmagent:
-    container_name: vmagent
-    image: victoriametrics/vmagent:v1.115.0
-    depends_on:
-      - "victoriametrics"
-    ports:
-      - 8429:8429
-    volumes:
-      - vmagentdata:/vmagentdata
-    command:
-      - "--remoteWrite.url=http://victoriametrics:8428/api/v1/write"
-    restart: always
+  # # vmagent
+  # # VictoriaMetrics data ingestion agent.
+  # vmagent:
+  #   container_name: vmagent
+  #   image: victoriametrics/vmagent:v1.115.0
+  #   restart: always
+  #   depends_on:
+  #     - "victoriametrics"
+  #   ports:
+  #     - 8429:8429
+  #   volumes:
+  #     - vmagent-data:/vmagentdata
+  #   command:
+  #     - "--remoteWrite.url=http://victoriametrics:8428/api/v1/write"
+  #     - "-influxListenAddr=:8089"
+  #     - "-loggerLevel=INFO"
 
-  victoriametrics:
-    container_name: victoriametrics
-    image: victoriametrics/victoria-metrics:v1.115.0
-    ports:
-      - 8428:8428
-      - 8089:8089
-      - 8089:8089/udp
-      - 2003:2003
-      - 2003:2003/udp
-      - 4242:4242
-    volumes:
-      - vmdata:/storage
-    command:
-      - "--storageDataPath=/storage"
-      - "--graphiteListenAddr=:2003"
-      - "--opentsdbListenAddr=:4242"
-      - "--httpListenAddr=:8428"
-      - "--influxListenAddr=:8089"
-    restart: always
+  # # victoriametrics
+  # # VictoriaMetrics time-series database.
+  # victoriametrics:
+  #   container_name: victoriametrics
+  #   image: victoriametrics/victoria-metrics:v1.115.0
+  #   restart: always
+  #   ports:
+  #     - 8428:8428
+  #     - 8089:8089
+  #     - 8089:8089/udp
+  #     - 2003:2003
+  #     - 2003:2003/udp
+  #     - 4242:4242
+  #   volumes:
+  #     - vm-data:/storage
+  #   command:
+  #     - "--storageDataPath=/storage"
+  #     - "--graphiteListenAddr=:2003"
+  #     - "--opentsdbListenAddr=:4242"
+  #     - "--httpListenAddr=:8428"
+  #     - "--influxListenAddr=:8089"
 
-  grafana:
-    container_name: grafana
-    image: grafana/grafana:11.5.0
-    restart: always
-    depends_on:
-      - "victoriametrics"
-    ports:
-      - 3000:3000
-    volumes:
-      - grafanadata:/var/lib/grafana
-      - ./services/grafana/provisioning:/etc/grafana/provisioning/
+  # # grafana
+  # # Data visualization from victoriametrics.
+  # grafana:
+  #   container_name: grafana
+  #   image: grafana/grafana:11.5.0
+  #   restart: always
+  #   depends_on:
+  #     - "victoriametrics"
+  #   ports:
+  #     - 3000:3000
+  #   volumes:
+  #     - grafana-data:/var/lib/grafana
+  #     - ./services/grafana/provisioning:/etc/grafana/provisioning/
 
 volumes:
-  vm-data: {}
-  vmagent-data: {}
-  grafana-data: {}
+  vm-data:
+  vmagent-data:
+  grafana-data:
