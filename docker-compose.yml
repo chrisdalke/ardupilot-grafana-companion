@@ -97,6 +97,7 @@ services:
       - GF_INSTALL_PLUGINS=victoriametrics-metrics-datasource
       - GF_DASHBOARDS_MIN_REFRESH_INTERVAL=1s
 
+volumes:
   vm-data:
   vmagent-data:
   grafana-data:
