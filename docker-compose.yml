@@ -1,0 +1,92 @@
+version: 2
+services:
+  # mavp2p
+  # Mavlink proxy, allowing multiple mavlink clients to connect to the serial port.
+  mavp2p:
+    image: bluenviron/mavp2p
+    command: serial:/dev/ttyACM0:57600 udps:0.0.0.0:5600 tcps:0.0.0.0:5601
+    network_mode: host
+    privileged: true
+    restart: always
+  # tailscale
+  # Optional, allows tailscale VPN access to remotely stream mavlink.
+  tailscale:
+    image: tailscale/tailscale:latest
+    network_mode: host
+    privileged: true
+    environment:
+      - TS_AUTH_KEY=REPLACEME
+      - TS_STATE_DIR=/var/lib/tailscale
+      - TS_USERSPACE=true
+      - TS_AUTH_ONCE=true
+    volumes:
+      - tailscale-state:/var/lib/tailscale
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    cap_add:
+      - net_admin
+    restart: always
+
+  # # telegraf
+  # # Modular data collection agent, configured to ingest mavlink data.
+  # telegraf:
+  #   build: ./services/telegraf
+  #
+  # # vmagent
+  # # VictoriaMetrics data ingestion agent.
+  # vmagent:
+  #   container_name: vmagent
+  #   image: victoriametrics/vmagent:v1.115.0
+  #   restart: always
+  #   depends_on:
+  #     - "victoriametrics"
+  #   ports:
+  #     - 8429:8429
+  #   volumes:
+  #     - vmagent-data:/vmagentdata
+  #   command:
+  #     - "--remoteWrite.url=http://victoriametrics:8428/api/v1/write"
+  #     - "-influxListenAddr=:8089"
+  #     - "-loggerLevel=INFO"
+  #
+  # # victoriametrics
+  # # VictoriaMetrics time-series database.
+  # victoriametrics:
+  #   container_name: victoriametrics
+  #   image: victoriametrics/victoria-metrics:v1.115.0
+  #   restart: always
+  #   ports:
+  #     - 8428:8428
+  #     - 8089:8089
+  #     - 8089:8089/udp
+  #     - 2003:2003
+  #     - 2003:2003/udp
+  #     - 4242:4242
+  #   volumes:
+  #     - vm-data:/storage
+  #   command:
+  #     - "--storageDataPath=/storage"
+  #     - "--graphiteListenAddr=:2003"
+  #     - "--opentsdbListenAddr=:4242"
+  #     - "--httpListenAddr=:8428"
+  #     - "--influxListenAddr=:8089"
+  #
+  # # grafana
+  # # Data visualization from victoriametrics.
+  # grafana:
+  #   container_name: grafana
+  #   image: grafana/grafana:11.5.0
+  #   restart: always
+  #   depends_on:
+  #     - "victoriametrics"
+  #   ports:
+  #     - 3000:3000
+  #   volumes:
+  #     - grafana-data:/var/lib/grafana
+  #     - ./services/grafana/provisioning:/etc/grafana/provisioning/
+
+volumes:
+  vm-data:
+  vmagent-data:
+  grafana-data:
+  tailscale-state:
