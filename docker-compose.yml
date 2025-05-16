@@ -2,6 +2,7 @@ version: "2"
 services:
   # mavp2p
   # Mavlink proxy, allowing multiple mavlink clients to connect to the serial port.
+  # Expects a device on USB at /dev/ttyACM0
   mavp2p:
     image: bluenviron/mavp2p
     command: serial:/dev/ttyACM0:57600 tcpc:127.0.0.1:5760 udps:0.0.0.0:5600 tcps:0.0.0.0:5601
@@ -33,6 +34,10 @@ services:
   telegraf:
     build: ./services/telegraf
     restart: always
+    networks:
+      bridger:
+        ipv4_address: 10.5.1.2
+      default:
 
   # vmagent
   # VictoriaMetrics data ingestion agent.
@@ -96,3 +101,12 @@ services:
   vmagent-data:
   grafana-data:
   tailscale-state:
+
+networks:
+  bridger:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.5.1.0/24
+          gateway: 10.5.1.1
