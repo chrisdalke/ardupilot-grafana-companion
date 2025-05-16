@@ -82,7 +82,7 @@ services:
   # Data visualization from victoriametrics.
   grafana:
     container_name: grafana
-    image: grafana/grafana:11.5.0
+    build: ./services/grafana
     restart: always
     depends_on:
       - "victoriametrics"
@@ -90,7 +90,6 @@ services:
       - 3000:3000
     volumes:
       - grafana-data:/var/lib/grafana
-      - ./services/grafana/provisioning:/etc/grafana/provisioning/
     environment:
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin

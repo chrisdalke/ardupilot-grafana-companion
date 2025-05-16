@@ -10,7 +10,33 @@ The project is designed to work with ArduPilot drones but should work with any M
 
 ## Showcase
 
+- TODO: Plot drone roll,pitch,yaw
+- TODO: Plot of drone maximum speed
+- TODO: Plot drone lat/lon
+
+Demo video - live streaming telemetry
+
 ## Getting Started
+
+To deploy this project onto a drone, you will need the following components:
+
+- Raspberry Pi 5
+- 5V, 3A DC-DC Power supply for Raspberry Pi
+- ArduPilot or other flight controller
+- USB cable
+- 4G Modem or Starlink dish
+
+### Option 1: Deploy with BalenaOS
+
+1. Sign up for [BalenaCloud](https://www.balena.io/)
+2. Create a fleet, and use `balena push` to push this project as a release
+3. Flag
+
+### Option 2: Deploy manually
+
+1. Provision a Raspberry Pi 5 with
+2. Install Docker.
+3. Close this project, and run `docker compose up -d --build` to start the project.
 
 ## Hardware Architecture
 
