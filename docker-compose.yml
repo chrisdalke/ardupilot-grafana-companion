@@ -4,7 +4,7 @@ services:
   # Mavlink proxy, allowing multiple mavlink clients to connect to the serial port.
   mavp2p:
     image: bluenviron/mavp2p
-    command: serial:/dev/ttyACM0:57600 udps:0.0.0.0:5600 tcps:0.0.0.0:5601
+    command: serial:/dev/ttyACM0:57600 tcpc:127.0.0.1:5760 udps:0.0.0.0:5600 tcps:0.0.0.0:5601
     network_mode: host
     privileged: true
     restart: always
@@ -32,6 +32,7 @@ services:
   # Modular data collection agent, configured to ingest mavlink data.
   telegraf:
     build: ./services/telegraf
+    restart: always
 
   # vmagent
   # VictoriaMetrics data ingestion agent.
@@ -89,8 +90,8 @@ services:
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
       - GF_INSTALL_PLUGINS=victoriametrics-metrics-datasource
+      - GF_DASHBOARDS_MIN_REFRESH_INTERVAL=1s
 
-volumes:
   vm-data:
   vmagent-data:
   grafana-data:

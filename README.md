@@ -21,6 +21,7 @@ In order to stream logs live, you will also need some type of comms equipment, a
 In my case, I am using a USB 4G modem with a Google Fi unlimited sim card. In the US, you can get prepaid data-only sim cards from AT&T. For the VPN, I use Tailscale.
 
 _Hardware block diagram:_
+![hw](resources/images/hw.png)
 
 ## Software Architecture
 
@@ -31,3 +32,5 @@ There are a number of improvements you could make to this project to use it in p
 - Host VictoriaMetrics & Grafana in the cloud: Hosting the Grafana and database instances on the companion computer means it needs a stable internet connection and VPN access. You can improve on this by hosting the `victoriametrics` and `grafana` service in the cloud, and changing `vmagent` so that it writes to the cloud instance. With this change, you do not need the drone to be online to view past data.
 
 - Adding tagging for multiple drones: Right now, the data for two separate drones will be added to the same feed. To use this project with a fleet of drones, you could modify the telegraf plugin config to tag each metric with the drone's ID.
+
+- Swap VictoriaMetrics with another database: We chose VictoriaMetrics because of its great performance and ease of use, but you could swap it for another database such as InfluxDB.
